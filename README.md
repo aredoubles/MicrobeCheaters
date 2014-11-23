@@ -30,9 +30,12 @@ Pathogens may be another way to allow for mutualists to persist. To be done late
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+This model is based off the work by Pillai et al. (2014). We've added some host feedback methods (and later, pathogens) to see how they affect the results.
 
 ## CREDITS AND REFERENCES
 
-Concept by Décio Correa and Catalina Cuellar-Gempeler.
+Concept by Décio Correa and Catalina Cuellar-Gempeler, based off work by Pillai et al. (2014).
 Coding by Roger Shaw.
+
+
+Pillai, P., Gouhier, T. C., and Vollmer, S. V. 2014. The cryptic role of biodiversity in the emergence of host–microbial mutualisms. Ecology letters, 17(11): 1437-1446.
