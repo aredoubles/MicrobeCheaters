@@ -101,11 +101,6 @@ to selection
       ask n-of overcap strongs-here [ die ]
     ]
   ]
-  ;; Keep dead hosts uninhabitable, if we want that.
-  if host-death? = TRUE [
-    ask turtles [
-      if [health] of patch-here = 0 [die]]
-  ]
 end
 
 to reproduce
@@ -140,9 +135,7 @@ to host-health
     ;; Other option: permanently die, and fracture the landscape
     if health <= 0 [
       ask turtles-here [die]
-      ifelse host-death? = TRUE 
-      [set health 0]
-      [set health 50]
+      set health 50
     ]
   ]
 end
@@ -216,8 +209,8 @@ SLIDER
 move-dist
 move-dist
 1
-5
-2
+10
+3
 1
 1
 NIL
@@ -232,7 +225,7 @@ carrying-cap
 carrying-cap
 0
 20
-5
+10
 5
 1
 NIL
@@ -308,7 +301,7 @@ SWITCH
 409
 host-flush?
 host-flush?
-0
+1
 1
 -1000
 
@@ -330,7 +323,7 @@ SWITCH
 446
 host-health?
 host-health?
-0
+1
 1
 -1000
 
@@ -413,17 +406,6 @@ Reproduction timing:
 11
 0.0
 1
-
-SWITCH
-172
-413
-285
-446
-host-death?
-host-death?
-0
-1
--1000
 
 @#$#@#$#@
 ## What is it?
