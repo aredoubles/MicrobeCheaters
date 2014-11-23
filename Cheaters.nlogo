@@ -1,7 +1,3 @@
-;; mutualist, weak cheater, and strong cheater microbes exist on a host
-;; How can the mutualist become dominant?
-
-
 ;;;;;;;;; CURRENT ISSUES ;;;;;;;;;;;;;
 ;; * Determine order of events
 ;;     * Dispersal -> selection -> breeding?
@@ -65,8 +61,6 @@ to go
   movement
   selection
   reproduce
-  if (host-flush? = TRUE) [ host-flush ]
-  if (host-health? = TRUE) [ host-health ]
   tick
 end
 
@@ -101,6 +95,8 @@ to selection
       ask n-of overcap strongs-here [ die ]
     ]
   ]
+  if (host-flush? = TRUE) [ host-flush ]
+  if (host-health? = TRUE) [ host-health ]
 end
 
 to reproduce
@@ -301,7 +297,7 @@ SWITCH
 409
 host-flush?
 host-flush?
-1
+0
 1
 -1000
 
@@ -323,7 +319,7 @@ SWITCH
 446
 host-health?
 host-health?
-1
+0
 1
 -1000
 
