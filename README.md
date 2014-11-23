@@ -1,10 +1,10 @@
-## WHAT IS IT?
+## What is it?
 
 Illustrating the dynamics between a host, and its mutualist microbes, but with weak and strong cheaters mixed in as well. What allows the mutualist (and its host) to stop the spread of cheaters, and survive? How do the weak and strong cheaters interact?
 
 <img src="Screenshot.png" style="width:400px">
 
-## HOW IT WORKS
+## How it works
 
 Three microbe species exist on a host: a mutualist, a weak cheater, and a strong cheater.
 
@@ -19,23 +19,23 @@ Things to vary include the reproductive rates of each species, and others(?).
 In the end, we are interested in how many patches contain the mutualist microbe, and the population sizes of each species.
 
 
-## HOW TO USE IT
+## How to use it
 
 Click 'setup', and then 'go'! Click 'go' again the stop the model when you're satisfied. Adjust the 'host-health?' and 'host-flush?' switches to see how they affect the results.
 
 
-## EXTENDING THE MODEL
+## Extending the model
 
 Pathogens may be another way to allow for mutualists to persist. To be done later?
 
-## RELATED MODELS
+## Related models
 
 This model is based off the work by Pillai et al. (2014). We've added some host feedback methods (and later, pathogens) to see how they affect the results.
 
-## CREDITS AND REFERENCES
+## Credits and references
 
-Concept by Décio Correa and Catalina Cuellar-Gempeler, based off work by Pillai et al. (2014).
+* Concept by Décio Correa and Catalina Cuellar-Gempeler, based off work by Pillai et al. (2014).
 Coding by Roger Shaw.
 
 
-Pillai, P., Gouhier, T. C., and Vollmer, S. V. 2014. The cryptic role of biodiversity in the emergence of host–microbial mutualisms. Ecology letters, 17(11): 1437-1446.
+* Pillai, P., Gouhier, T. C., and Vollmer, S. V. 2014. The cryptic role of biodiversity in the emergence of host–microbial mutualisms. Ecology letters, 17(11): 1437-1446.
