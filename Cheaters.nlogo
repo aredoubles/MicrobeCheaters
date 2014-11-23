@@ -354,27 +354,27 @@ Illustrating the dynamics between a host, and its mutualist microbes, but with w
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+Three microbe species exist on a host: a mutualist, a weak cheater, and a strong cheater.
+
+The mutualist supports the host's health, while the cheaters both steal from the host.
+
+Some rules govern the local coexistence of these species.  When only the mutualist and the strong cheater are present on a patch, the strong cheater eliminates the mutualist. And when all three species are present, the strong cheater is eliminated.
+
+So how does the mutualist (and its host) persist? Here, we explore whether host feedback mechanisms can help, by flushing itself, or just dying.
+
+Things to vary include the reproductive rates of each species, and others(?).
+
+In the end, we are interested in how many patches contain the mutualist microbe, and the population sizes of each species.
+
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Click 'setup', and then 'go'! Click 'go' again the stop the model when you're satisfied. Adjust the 'host-health?' and 'host-flush?' switches to see how they affect the results.
 
-## THINGS TO NOTICE
-
-(suggested things for the user to notice while running the model)
-
-## THINGS TO TRY
-
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+Pathogens may be another way to allow for mutualists to persist. To be done later?
 
 ## RELATED MODELS
 
@@ -382,7 +382,8 @@ Illustrating the dynamics between a host, and its mutualist microbes, but with w
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Concept by Décio Correa and Catalina Cuellar-Gempeler.
+Coding by Roger Shaw.
 @#$#@#$#@
 default
 true
