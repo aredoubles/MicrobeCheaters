@@ -2,6 +2,8 @@
 
 Illustrating the dynamics between a host, and its mutualist microbes, but with weak and strong cheaters mixed in as well. What allows the mutualist (and its host) to stop the spread of cheaters, and survive? How do the weak and strong cheaters interact?
 
+<img src="Screenshot.png" style="width:400px">
+
 ## HOW IT WORKS
 
 Three microbe species exist on a host: a mutualist, a weak cheater, and a strong cheater.
