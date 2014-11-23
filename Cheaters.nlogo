@@ -27,21 +27,22 @@ patches-own [health]
 to setup
   clear-all
   
-  create-mutualists 50 [
-    setxy random-xcor random-ycor
-    set size 0.5
-    set color sky
-    set shape "face happy"
+  ask patches [
+    sprout-mutualists 1 [
+      set size 0.5
+      set color sky
+      set shape "face happy"
+    ]
   ]
   
-  create-weaks 50 [
+  create-weaks 20 [
     setxy random-xcor random-ycor
     set size 0.5
     set color yellow
     set shape "x"
   ]
   
-  create-strongs 50 [
+  create-strongs 20 [
     setxy random-xcor random-ycor
     set size 0.5
     set color red
@@ -98,7 +99,7 @@ end
 
 to reproduce
   ;; 'mod' is a weird NetLogo command for getting the remainder after division
-  ;; Basically, if the number of time ticks is perfectly divisible by the 'breed-every' number, then hatch 1
+  ;; Basically, if the number of time ticks is perfectly divisible by the 'breed-every' number, then reproduce
   if ticks mod mutualist-breed-every = 0 [
     ask mutualists [ hatch 1 ]]
   if ticks mod weak-breed-every = 0 [
