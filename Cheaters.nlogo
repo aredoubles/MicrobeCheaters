@@ -10,9 +10,8 @@
 ;;     * Having host feedback just speeds that up
 ;; * What are the 'traits' or 'niche' things for, again?
 ;; * What happens when hosts die? Currently, destroy all microbes, new host re-born
-;; * Plot # of species present in landscape
 
-
+;; Create the three species
 breed [mutualists mutualist]
 breed [weaks weak]
 breed [strongs strong]
@@ -21,12 +20,14 @@ breed [strongs strong]
 weaks-own [weaktrait]
 strongs-own [strongtrait]
 
+;; Host health, only important if that's turned on
 patches-own [health]
 
 
 to setup
   clear-all
   
+  ;; Every patch gets a mutualist, to begin
   ask patches [
     sprout-mutualists 1 [
       set size 0.5
@@ -35,20 +36,23 @@ to setup
     ]
   ]
   
-  create-weaks 20 [
+  ;; Cheaters distributed randomly
+  ;; Adjust the initial abundances of these with sliders
+  create-weaks weak-start [
     setxy random-xcor random-ycor
     set size 0.5
     set color yellow
     set shape "x"
   ]
   
-  create-strongs 20 [
+  create-strongs strong-start [
     setxy random-xcor random-ycor
     set size 0.5
     set color red
     set shape "x"
   ]
   
+  ;; If host health is considered, they need to have that variable
   if (host-health? = TRUE) [
     ask patches [ set health 50 ] ]
   
@@ -69,14 +73,16 @@ end
 to movement
   ask turtles [
     set heading random 360
-    fd random move-dist
+    forward random move-dist   ; move-dist is a slider, a random number is picked with that as the max
   ]
 end
 
 to selection
   ask patches [
+    ;; M + S -> S
     if (count mutualists-here > 0) and (count strongs-here > 0) and (count weaks-here = 0) [
       ask mutualists-here [die] ]
+    ;; M + S + W -> MW
     if (count mutualists-here > 0) and (count strongs-here > 0) and (count weaks-here > 0) [
       ask strongs-here [die] ]
     ;; All other combinations: no changes needed, right?
@@ -100,6 +106,7 @@ end
 to reproduce
   ;; 'mod' is a weird NetLogo command for getting the remainder after division
   ;; Basically, if the number of time ticks is perfectly divisible by the 'breed-every' number, then reproduce
+  ;; The 'breed-every' numbers are sliders
   if ticks mod mutualist-breed-every = 0 [
     ask mutualists [ hatch 1 ]]
   if ticks mod weak-breed-every = 0 [
@@ -124,6 +131,8 @@ to host-health
     if (count mutualists-here > 0) and (count strongs-here = 0) and (count weaks-here > 0) [
       set health health + 1
     ]
+    ;; Right now, if the host loses all health, the microbes all die, and a new host is born
+    ;; Other option: permanently die, and fracture the landscape
     if health <= 0 [
       ask turtles-here [die]
       set health 50
@@ -132,9 +141,9 @@ to host-health
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+238
 10
-550
+578
 371
 -1
 -1
@@ -176,10 +185,10 @@ NIL
 1
 
 BUTTON
-110
-23
-173
-56
+108
+25
+171
+58
 NIL
 go
 T
@@ -195,7 +204,7 @@ NIL
 SLIDER
 13
 73
-185
+105
 106
 move-dist
 move-dist
@@ -208,10 +217,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-12
-115
-184
-148
+113
+73
+221
+106
 carrying-cap
 carrying-cap
 0
@@ -223,10 +232,10 @@ NIL
 HORIZONTAL
 
 PLOT
-598
-29
-877
-179
+595
+11
+905
+161
 goodpatches
 time
 % patches
@@ -241,30 +250,15 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot (((count patches with [count mutualists-here > 0]) / 121) * 100)"
 
 SLIDER
-14
-173
-184
-206
-mutualist-breed-every
-mutualist-breed-every
-0
-10
-7
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
 13
-214
-185
-247
-weak-breed-every
-weak-breed-every
+245
+183
+278
+mutualist-breed-every
+mutualist-breed-every
 0
 10
-4
+8
 1
 1
 NIL
@@ -272,9 +266,24 @@ HORIZONTAL
 
 SLIDER
 12
-254
+284
 184
-287
+317
+weak-breed-every
+weak-breed-every
+0
+10
+4
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+11
+322
+183
+355
 strong-breed-every
 strong-breed-every
 0
@@ -286,10 +295,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-17
-309
-169
-342
+11
+376
+163
+409
 host-flush?
 host-flush?
 1
@@ -297,10 +306,10 @@ host-flush?
 -1000
 
 SWITCH
-27
-425
-155
+11
 458
+139
+491
 pathogens?
 pathogens?
 1
@@ -308,10 +317,10 @@ pathogens?
 -1000
 
 SWITCH
-23
-351
-158
-384
+11
+413
+162
+446
 host-health?
 host-health?
 1
@@ -319,10 +328,10 @@ host-health?
 -1000
 
 PLOT
-597
-198
-906
-389
+596
+180
+905
+371
 pops
 NIL
 NIL
@@ -339,11 +348,61 @@ PENS
 "strongs" 1.0 0 -2674135 true "" "plot count strongs"
 
 TEXTBOX
-161
-438
-311
-456
+145
+471
+295
+489
 (Not currently in use)
+11
+0.0
+1
+
+SLIDER
+13
+139
+185
+172
+weak-start
+weak-start
+1
+50
+20
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+13
+176
+185
+209
+strong-start
+strong-start
+0
+50
+20
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+15
+120
+165
+138
+Initial cheater abundances:
+11
+0.0
+1
+
+TEXTBOX
+18
+227
+168
+245
+Reproduction timing:
 11
 0.0
 1
