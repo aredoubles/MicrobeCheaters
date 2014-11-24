@@ -17,7 +17,7 @@ weaks-own [weaktrait]
 strongs-own [strongtrait]
 
 ;; Host health, only important if that's turned on
-patches-own [health]
+patches-own [health diapause]
 
 
 to setup
@@ -30,6 +30,10 @@ to setup
       set color sky
       set shape "face happy"
     ]
+    if host-health? = TRUE [ 
+      set health 20 
+      set diapause 10
+      ]
   ]
   
   ;; Cheaters distributed randomly
@@ -48,10 +52,6 @@ to setup
     set shape "x"
   ]
   
-  ;; If host health is considered, they need to have that variable
-  if (host-health? = TRUE) [
-    ask patches [ set health 50 ] ]
-  
   reset-ticks
   
 end
@@ -62,6 +62,7 @@ to go
   selection
   reproduce
   tick
+  if count turtles = 0 [ stop ]
 end
 
 to movement
@@ -121,18 +122,18 @@ end
 to host-health
   ask patches [
     set health ( health - 1 )
-    if (count mutualists-here > 0) and (count strongs-here = 0) and (count weaks-here = 0) [
+    if (count mutualists-here > 0) and (count strongs-here = 0) [
       set health health + 1
     ]
-    if (count mutualists-here > 0) and (count strongs-here = 0) and (count weaks-here > 0) [
-      set health health + 1
-    ]
-    ;; Right now, if the host loses all health, the microbes all die, and a new host is born
+    ;; Right now, if the host loses all health, the microbes all die, and a new host is immediately born
+    ;; I'm going to add a delay until a new host is born
     ;; Other option: permanently die, and fracture the landscape
     if health <= 0 [
       ask turtles-here [die]
-      set health 50
+      set diapause diapause - 1
+      if diapause <= 0 [ set health 50 ]
     ]
+    ; set pcolor scale-color black health 0 20    ;; For visualizing host health, kind of distractin
   ]
 end
 @#$#@#$#@
@@ -254,7 +255,7 @@ mutualist-breed-every
 mutualist-breed-every
 0
 10
-8
+10
 1
 1
 NIL
@@ -269,7 +270,7 @@ weak-breed-every
 weak-breed-every
 0
 10
-4
+10
 1
 1
 NIL
@@ -284,7 +285,7 @@ strong-breed-every
 strong-breed-every
 0
 10
-4
+2
 1
 1
 NIL
@@ -297,7 +298,7 @@ SWITCH
 409
 host-flush?
 host-flush?
-0
+1
 1
 -1000
 
