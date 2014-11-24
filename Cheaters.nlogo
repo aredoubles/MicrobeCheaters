@@ -32,7 +32,7 @@ to setup
     ]
     if host-health? = TRUE [ 
       set health 20 
-      set diapause 10
+      set diapause host-breed-delay
       ]
   ]
   
@@ -270,7 +270,7 @@ weak-breed-every
 weak-breed-every
 0
 10
-10
+7
 1
 1
 NIL
@@ -403,6 +403,21 @@ Reproduction timing:
 11
 0.0
 1
+
+SLIDER
+175
+413
+347
+446
+host-breed-delay
+host-breed-delay
+0
+20
+5
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## What is it?
