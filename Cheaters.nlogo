@@ -23,7 +23,7 @@ to setup
       set color sky
       set shape "face happy"
     ]
-    set host-health 100 
+    set host-health 100      ; If changed, make sure that it matches the newly-born host-health after diapause, in 'set-host-health'
     set diapause host-breed-delay    ; Important later, if hosts are killed. See 'set-host-health' function near the bottom.
   ]
   
@@ -57,7 +57,7 @@ to go
   reproduce
   tick
   if count turtles = 0 [ stop ]
-  if (count weaks = 0) and (count strongs = 0) [stop]
+  ;if (count weaks = 0) and (count strongs = 0) [stop]
 end
 
 to movement
@@ -73,6 +73,7 @@ to set-microbe-health
   ask mutualists [
     if any? weaks-here [ set microbe-health (microbe-health - weak-hurt-mutualists) ]
     if any? strongs-here [ set microbe-health (microbe-health - strong-hurt-mutualists) ]
+    set microbe-health (microbe-health + 1)
   ]
   ask weaks [
     ; if any? mutualists-here [ set microbe-health (microbe-health - 0) ]
@@ -130,7 +131,7 @@ to set-host-health
     if host-health <= 0 [
       ask turtles-here [die]
       set diapause diapause - 1
-      if diapause <= 0 [ set host-health 20 ]
+      if diapause <= 0 [ set host-health 100 ]     ; Make sure that this matches initial host-health
     ]
     ; set pcolor scale-color red host-health 0 20    ;; For visualizing host health, kind of distracting
   ]
@@ -293,7 +294,7 @@ host-breed-delay
 host-breed-delay
 0
 20
-5
+8
 1
 1
 NIL
@@ -308,7 +309,7 @@ weak-steal
 weak-steal
 0
 30
-5
+4
 1
 1
 NIL
@@ -403,7 +404,7 @@ strong-hurt-weak
 strong-hurt-weak
 0
 10
-2
+1
 1
 1
 NIL
