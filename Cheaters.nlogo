@@ -19,18 +19,18 @@ to setup
   
   ;; Every patch gets a mutualist, and starts with 20 health
   ask patches [
-    sprout-mutualists 1 [
-      set color sky
-      set shape "face happy"
+    sprout-weaks 1 [
+      set color yellow
+      set shape "x"
     ]
     set host-health 100      ; If changed, make sure that it matches the newly-born host-health after diapause, in 'set-host-health'
     set diapause host-breed-delay    ; Important later, if hosts are killed. See 'set-host-health' function near the bottom.
   ]
   
   ;; Cheaters distributed randomly
-  create-weaks 20 [
+  create-mutualists 20 [
     setxy random-xcor random-ycor
-    set color yellow
+    set color blue
     set shape "x"
   ]
   
@@ -61,9 +61,19 @@ to go
 end
 
 to movement
-  ask turtles [
+  ask strongs [
     set heading random 360
-    forward random move-dist   ; move-dist is a slider, a random number is picked with that as the max
+    forward random move-s   ; move-dist is a slider, a random number is picked with that as the max
+  ]
+  
+  ask weaks [
+    set heading random 360
+    forward random move-w   ; move-dist is a slider, a random number is picked with that as the max
+  ]
+  
+  ask mutualists [
+    set heading random 360
+    forward random move-m   ; move-dist is a slider, a random number is picked with that as the max
   ]
 end
 
@@ -71,7 +81,6 @@ to set-microbe-health
   ;; Individual microbes' health depends on what other species are present there.
   ;; The health costs are all sliders, found on the interface
   ask mutualists [
-    if any? weaks-here [ set microbe-health (microbe-health - weak-hurt-mutualists) ]
     if any? strongs-here [ set microbe-health (microbe-health - strong-hurt-mutualists) ]
     set microbe-health (microbe-health + 1)
   ]
@@ -110,7 +119,7 @@ end
 
 to host-flush
   ask patches [
-    if count mutualists-here = 0 [
+    if count strongs-here = per-flush * carrying-cap [
       ask turtles-here [die]]    ; All of these dead turtles are cheaters
   ]
 end
@@ -124,6 +133,11 @@ to set-host-health
     if any? strongs-here [
       set host-health (host-health - strong-steal)
     ]
+    
+    if any? mutualists-here [
+      set host-health (host-health + mutualist-give)
+    ]
+    
     ;; Assume that mutualists do not hurt the host overall (any hurt is perfectly offset by a benefit)
 
     ;; If the host loses all health, the microbes all die, and a new host is born after a delay
@@ -207,15 +221,15 @@ NIL
 1
 
 SLIDER
-13
-73
-105
-106
-move-dist
-move-dist
-1
+543
+496
+635
+529
+move-s
+move-s
+0
 10
-3
+10
 1
 1
 NIL
@@ -294,36 +308,36 @@ host-breed-delay
 host-breed-delay
 0
 20
-8
+5
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-13
-133
-185
-166
+1024
+215
+1196
+248
 weak-steal
 weak-steal
 0
-30
-4
+10
+1
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-13
-171
-185
-204
+1020
+274
+1192
+307
 strong-steal
 strong-steal
 0
-30
+10
 10
 1
 1
@@ -331,10 +345,10 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-14
-116
-187
-144
+1033
+167
+1206
+185
 How cheaters hurt their host:
 11
 0.0
@@ -389,7 +403,7 @@ strong-hurt-mutualists
 strong-hurt-mutualists
 0
 10
-5
+2
 1
 1
 NIL
@@ -406,6 +420,66 @@ strong-hurt-weak
 10
 1
 1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+250
+432
+422
+465
+mutualist-give
+mutualist-give
+0
+20
+20
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+474
+436
+646
+469
+move-w
+move-w
+0
+10
+7
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+684
+443
+856
+476
+move-m
+move-m
+0
+10
+4
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+266
+493
+438
+526
+per-flush
+per-flush
+0
+1
+0.5
+0.1
 1
 NIL
 HORIZONTAL
@@ -757,7 +831,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.1.0
+NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
