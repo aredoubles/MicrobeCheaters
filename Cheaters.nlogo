@@ -61,20 +61,10 @@ to go
 end
 
 to movement
-  ask strongs [
-    set heading random 360
-    forward random move-s   ; move-dist is a slider, a random number is picked with that as the max
-  ]
-  
-  ask weaks [
-    set heading random 360
-    forward random move-w   ; move-dist is a slider, a random number is picked with that as the max
-  ]
-  
-  ask mutualists [
-    set heading random 360
-    forward random move-m   ; move-dist is a slider, a random number is picked with that as the max
-  ]
+  ask turtles [ set heading random 360 ]
+  ask strongs [ forward random move-s ]  ; move-dist is a slider, a random number is picked with that as the max
+  ask weaks [ forward random move-w ]  ; move-dist is a slider, a random number is picked with that as the max
+  ask mutualists [ forward random move-m ]   ; move-dist is a slider, a random number is picked with that as the max
 end
 
 to set-microbe-health
@@ -119,7 +109,7 @@ end
 
 to host-flush
   ask patches [
-    if count strongs-here = per-flush * carrying-cap [
+    if count strongs-here >= per-flush * carrying-cap [
       ask turtles-here [die]]    ; All of these dead turtles are cheaters
   ]
 end
@@ -831,7 +821,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.0.4
+NetLogo 5.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
