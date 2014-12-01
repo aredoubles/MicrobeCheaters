@@ -93,15 +93,18 @@ to set-microbe-health
    ask patches [
     if (count mutualists-here > carrying-cap) [
       let overcap ((count mutualists-here) - carrying-cap)
-      ask n-of overcap mutualists-here [ die ]
+      ;ask n-of overcap mutualists-here [ die ]
+      ask min-n-of overcap mutualists-here [ microbe-health ] [ die ]
     ]
     if (count weaks-here > carrying-cap) [
       let overcap ((count weaks-here) - carrying-cap)
-      ask n-of overcap weaks-here [ die ]
+      ;ask n-of overcap weaks-here [ die ]
+      ask min-n-of overcap weaks-here [ microbe-health ] [ die ]
     ]
     if (count strongs-here > carrying-cap) [
       let overcap ((count strongs-here) - carrying-cap)
-      ask n-of overcap strongs-here [ die ]
+      ;ask n-of overcap strongs-here [ die ]
+      ask min-n-of overcap strongs-here [ microbe-health ] [ die ]
     ]
   ]
   if (host-flush? = TRUE) [ host-flush ]
@@ -118,14 +121,17 @@ to set-host-health
   ask patches [
     ;; Hosts' health gets drained by cheaters
     if any? weaks-here [
-      set host-health (host-health - weak-steal)
+      ;set host-health (host-health - weak-steal)
+      set host-health (host-health - (weak-steal * (count weaks-here)))
     ]
     if any? strongs-here [
-      set host-health (host-health - strong-steal)
+      ;set host-health (host-health - strong-steal)
+      set host-health (host-health - (strong-steal * (count strongs-here)))
     ]
     
     if any? mutualists-here [
-      set host-health (host-health + mutualist-give)
+      ;set host-health (host-health + mutualist-give)
+      set host-health (host-health + (mutualist-give * (count mutualists-here)))
     ]
     
     ;; Assume that mutualists do not hurt the host overall (any hurt is perfectly offset by a benefit)
@@ -145,8 +151,15 @@ end
 to reproduce
   ;; 'mod' is a weird NetLogo command for getting the remainder after division
   ;; Basically, if the number of time ticks is perfectly divisible by t, then all microbes reproduce
-  if ticks mod 5 = 0 [
-    ask turtles [ hatch 1 [ set microbe-health 20 ]]]
+  ;if ticks mod 5 = 0 [
+  ;  ask turtles [ hatch 1 [ set microbe-health 20 ]]]
+  ask turtles [
+    if microbe-health >= reproduction-threshold [
+      let split-health round ( microbe-health / 2 )
+      hatch 1 [ set microbe-health split-health ]
+      set microbe-health split-health
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -211,10 +224,10 @@ NIL
 1
 
 SLIDER
-543
-496
-635
-529
+241
+431
+411
+464
 move-s
 move-s
 0
@@ -226,10 +239,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-113
-73
-221
-106
+51
+68
+159
+101
 carrying-cap
 carrying-cap
 0
@@ -259,10 +272,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot (((count patches with [count mutualists-here > 0]) / 121) * 100)"
 
 SWITCH
-18
-450
-170
-483
+29
+353
+181
+386
 host-flush?
 host-flush?
 1
@@ -290,10 +303,10 @@ PENS
 "strongs" 1.0 0 -2674135 true "" "plot count strongs"
 
 SLIDER
-20
-411
-192
-444
+31
+314
+203
+347
 host-breed-delay
 host-breed-delay
 0
@@ -305,10 +318,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1024
-215
-1196
-248
+439
+423
+611
+456
 weak-steal
 weak-steal
 0
@@ -320,10 +333,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1020
-274
-1192
-307
+440
+466
+612
+499
 strong-steal
 strong-steal
 0
@@ -335,30 +348,30 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-1033
-167
-1206
-185
+440
+394
+613
+412
 How cheaters hurt their host:
 11
 0.0
 1
 
 TEXTBOX
-16
-214
-166
-232
+27
+117
+177
+135
 Competition coefficients:
 11
 0.0
 1
 
 SLIDER
-14
-231
-186
-264
+25
+134
+197
+167
 weak-hurt-mutualists
 weak-hurt-mutualists
 0
@@ -370,10 +383,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-267
-186
-300
+25
+170
+197
+203
 weak-hurt-strong
 weak-hurt-strong
 0
@@ -385,10 +398,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-304
-187
-337
+25
+207
+198
+240
 strong-hurt-mutualists
 strong-hurt-mutualists
 0
@@ -400,10 +413,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-341
-186
-374
+25
+244
+197
+277
 strong-hurt-weak
 strong-hurt-weak
 0
@@ -415,10 +428,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-250
-432
-422
-465
+30
+414
+202
+447
 mutualist-give
 mutualist-give
 0
@@ -430,10 +443,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-474
-436
-646
-469
+239
+389
+411
+422
 move-w
 move-w
 0
@@ -445,10 +458,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-684
-443
-856
-476
+240
+473
+412
+506
 move-m
 move-m
 0
@@ -460,16 +473,31 @@ NIL
 HORIZONTAL
 
 SLIDER
-266
-493
-438
-526
+30
+456
+202
+489
 per-flush
 per-flush
 0
 1
 0.5
 0.1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+666
+416
+868
+449
+reproduction-threshold
+reproduction-threshold
+20
+50
+30
+1
 1
 NIL
 HORIZONTAL
