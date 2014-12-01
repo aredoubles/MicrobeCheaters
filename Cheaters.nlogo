@@ -94,15 +94,18 @@ to set-microbe-health
    ask patches [
     if (count mutualists-here > carrying-cap) [
       let overcap ((count mutualists-here) - carrying-cap)
-      ask min-n-of overcap mutualists-here [ microbe-health ] [ die ]
+      ; ask min-n-of overcap mutualists-here [ microbe-health ] [ die ]
+      ask n-of overcap mutualists-here [ die ]
     ]
     if (count weaks-here > carrying-cap) [
       let overcap ((count weaks-here) - carrying-cap)
-      ask min-n-of overcap weaks-here [ microbe-health ] [ die ]
+      ; ask min-n-of overcap weaks-here [ microbe-health ] [ die ]
+      ask n-of overcap weaks-here [ die ]
     ]
     if (count strongs-here > carrying-cap) [
       let overcap ((count strongs-here) - carrying-cap)
-      ask min-n-of overcap strongs-here [ microbe-health ] [ die ]
+      ; ask min-n-of overcap strongs-here [ microbe-health ] [ die ]
+      ask n-of overcap strongs-here [ die ]
     ]
   ]
   if (host-flush? = TRUE) [ host-flush ]
@@ -219,10 +222,10 @@ NIL
 1
 
 SLIDER
-543
-496
-635
-529
+251
+436
+424
+469
 move-s
 move-s
 0
@@ -234,10 +237,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-113
-73
-221
-106
+42
+74
+150
+107
 carrying-cap
 carrying-cap
 0
@@ -267,10 +270,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot (((count patches with [count mutualists-here > 0]) / 121) * 100)"
 
 SWITCH
-18
-450
-170
-483
+19
+349
+171
+382
 host-flush?
 host-flush?
 1
@@ -298,10 +301,10 @@ PENS
 "strongs" 1.0 0 -2674135 true "" "plot count strongs"
 
 SLIDER
-20
-411
-192
-444
+21
+310
+193
+343
 host-breed-delay
 host-breed-delay
 0
@@ -313,10 +316,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1024
-215
-1196
-248
+454
+421
+626
+454
 weak-steal
 weak-steal
 0
@@ -328,45 +331,45 @@ NIL
 HORIZONTAL
 
 SLIDER
-1020
-274
-1192
-307
+454
+466
+626
+499
 strong-steal
 strong-steal
 0
 10
-4
+2
 1
 1
 NIL
 HORIZONTAL
 
 TEXTBOX
-1033
-167
-1206
-185
+463
+397
+636
+415
 How cheaters hurt their host:
 11
 0.0
 1
 
 TEXTBOX
-16
-214
-166
-232
+18
+129
+168
+147
 Competition coefficients:
 11
 0.0
 1
 
 SLIDER
-14
-231
-186
-264
+16
+146
+188
+179
 weak-hurt-mutualists
 weak-hurt-mutualists
 0
@@ -378,10 +381,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-267
-186
-300
+16
+182
+188
+215
 weak-hurt-strong
 weak-hurt-strong
 0
@@ -393,40 +396,40 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-304
-187
-337
+16
+219
+189
+252
 strong-hurt-mutualists
 strong-hurt-mutualists
 0
 10
-1
+5
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-14
-341
-186
-374
+16
+256
+188
+289
 strong-hurt-weak
 strong-hurt-weak
 0
 10
-1
+3
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-250
-432
-422
-465
+18
+401
+190
+434
 mutualist-give
 mutualist-give
 0
@@ -438,10 +441,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-474
-436
-646
-469
+252
+393
+424
+426
 move-w
 move-w
 0
@@ -453,10 +456,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-684
-443
-856
-476
+251
+480
+423
+513
 move-m
 move-m
 0
@@ -468,10 +471,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-266
-493
-438
-526
+19
+446
+191
+479
 per-flush
 per-flush
 0
@@ -483,15 +486,15 @@ NIL
 HORIZONTAL
 
 SLIDER
-964
-59
-1166
-92
+674
+444
+876
+477
 reproduction-threshold
 reproduction-threshold
 0
 50
-20
+25
 1
 1
 NIL
