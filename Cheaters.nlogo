@@ -1,6 +1,5 @@
 ;;;;;;;;; CURRENT ISSUES ;;;;;;;;;;;;;
-;; * Density-dependent reproduction
-
+;; * Strong cheaters never seem to persist
 
 ;; Create the three species (define plural and singular terms)
 breed [mutualists mutualist]
@@ -94,17 +93,14 @@ to set-microbe-health
    ask patches [
     if (count mutualists-here > carrying-cap) [
       let overcap ((count mutualists-here) - carrying-cap)
-      ; ask min-n-of overcap mutualists-here [ microbe-health ] [ die ]
       ask n-of overcap mutualists-here [ die ]
     ]
     if (count weaks-here > carrying-cap) [
       let overcap ((count weaks-here) - carrying-cap)
-      ; ask min-n-of overcap weaks-here [ microbe-health ] [ die ]
       ask n-of overcap weaks-here [ die ]
     ]
     if (count strongs-here > carrying-cap) [
       let overcap ((count strongs-here) - carrying-cap)
-      ; ask min-n-of overcap strongs-here [ microbe-health ] [ die ]
       ask n-of overcap strongs-here [ die ]
     ]
   ]
@@ -122,14 +118,14 @@ to set-host-health
   ask patches [
     ;; Hosts' health gets drained by cheaters
     if any? weaks-here [
-      set host-health (host-health - (weak-steal * (count weaks-here)))
+      set host-health (host-health - weak-steal)
     ]
     if any? strongs-here [
-      set host-health (host-health - (strong-steal * (count strongs-here)))
+      set host-health (host-health - strong-steal)
     ]
     
     if any? mutualists-here [
-      set host-health (host-health + (mutualist-give * (count mutualists-here)))
+      set host-health (host-health + mutualist-give)
     ]
     
     ;; Assume that mutualists do not hurt the host overall (any hurt is perfectly offset by a benefit)
@@ -149,15 +145,8 @@ end
 to reproduce
   ;; 'mod' is a weird NetLogo command for getting the remainder after division
   ;; Basically, if the number of time ticks is perfectly divisible by t, then all microbes reproduce
-  ; if ticks mod 5 = 0 [
-  ;   ask turtles [ hatch 1 [ set microbe-health 20 ]]]
-  ask turtles [
-    if microbe-health >= reproduction-threshold [
-      let split-health round ( microbe-health / 2 )
-      hatch 1 [ set microbe-health split-health ]
-      set microbe-health split-health
-    ]
-  ]
+  if ticks mod 5 = 0 [
+    ask turtles [ hatch 1 [ set microbe-health 20 ]]]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -222,10 +211,10 @@ NIL
 1
 
 SLIDER
-251
-436
-424
-469
+543
+496
+635
+529
 move-s
 move-s
 0
@@ -237,10 +226,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-42
-74
-150
-107
+113
+73
+221
+106
 carrying-cap
 carrying-cap
 0
@@ -270,10 +259,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot (((count patches with [count mutualists-here > 0]) / 121) * 100)"
 
 SWITCH
-19
-349
-171
-382
+18
+450
+170
+483
 host-flush?
 host-flush?
 1
@@ -301,10 +290,10 @@ PENS
 "strongs" 1.0 0 -2674135 true "" "plot count strongs"
 
 SLIDER
-21
-310
-193
-343
+20
+411
+192
+444
 host-breed-delay
 host-breed-delay
 0
@@ -316,10 +305,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-454
-421
-626
-454
+1024
+215
+1196
+248
 weak-steal
 weak-steal
 0
@@ -331,12 +320,77 @@ NIL
 HORIZONTAL
 
 SLIDER
-454
-466
-626
-499
+1020
+274
+1192
+307
 strong-steal
 strong-steal
+0
+10
+10
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+1033
+167
+1206
+185
+How cheaters hurt their host:
+11
+0.0
+1
+
+TEXTBOX
+16
+214
+166
+232
+Competition coefficients:
+11
+0.0
+1
+
+SLIDER
+14
+231
+186
+264
+weak-hurt-mutualists
+weak-hurt-mutualists
+0
+10
+1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+14
+267
+186
+300
+weak-hurt-strong
+weak-hurt-strong
+0
+10
+1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+14
+304
+187
+337
+strong-hurt-mutualists
+strong-hurt-mutualists
 0
 10
 2
@@ -345,91 +399,26 @@ strong-steal
 NIL
 HORIZONTAL
 
-TEXTBOX
-463
-397
-636
-415
-How cheaters hurt their host:
-11
-0.0
-1
-
-TEXTBOX
-18
-129
-168
-147
-Competition coefficients:
-11
-0.0
-1
-
 SLIDER
-16
-146
-188
-179
-weak-hurt-mutualists
-weak-hurt-mutualists
-0
-10
-1
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-16
-182
-188
-215
-weak-hurt-strong
-weak-hurt-strong
-0
-10
-1
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-16
-219
-189
-252
-strong-hurt-mutualists
-strong-hurt-mutualists
-0
-10
-5
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-16
-256
-188
-289
+14
+341
+186
+374
 strong-hurt-weak
 strong-hurt-weak
 0
 10
-3
+1
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-18
-401
-190
-434
+250
+432
+422
+465
 mutualist-give
 mutualist-give
 0
@@ -441,10 +430,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-252
-393
-424
-426
+474
+436
+646
+469
 move-w
 move-w
 0
@@ -456,10 +445,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-251
-480
-423
-513
+684
+443
+856
+476
 move-m
 move-m
 0
@@ -471,31 +460,16 @@ NIL
 HORIZONTAL
 
 SLIDER
-19
-446
-191
-479
+266
+493
+438
+526
 per-flush
 per-flush
 0
 1
 0.5
 0.1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-674
-444
-876
-477
-reproduction-threshold
-reproduction-threshold
-0
-50
-25
-1
 1
 NIL
 HORIZONTAL
@@ -851,15 +825,6 @@ NetLogo 5.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
-<experiments>
-  <experiment name="goats" repetitions="2" runMetricsEveryStep="false">
-    <setup>setup</setup>
-    <go>go</go>
-    <timeLimit steps="200"/>
-    <metric>count mutualists</metric>
-    <steppedValueSet variable="strong-steal" first="0" step="1" last="10"/>
-  </experiment>
-</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
