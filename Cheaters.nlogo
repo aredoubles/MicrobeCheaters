@@ -1,55 +1,49 @@
 ;;;;;;;;; CURRENT ISSUES ;;;;;;;;;;;;;
-;; * Determine order of events
-;;     * Dispersal -> selection -> breeding?
-;; * Seems really sensitive to initial abundances
 ;; * Strong cheaters never seem to persist
-;;     * Having host feedback just speeds that up
-;; * What are the 'traits' or 'niche' things for, again?
-;; * What happens when hosts die? Currently, destroy all microbes, new host re-born
 
-;; Create the three species
+;; Create the three species (define plural and singular terms)
 breed [mutualists mutualist]
 breed [weaks weak]
 breed [strongs strong]
 
-;; Don't seem to be using these at all...
-weaks-own [weaktrait]
-strongs-own [strongtrait]
+;; 'Turtles' is what NetLogo calls individuals
+turtles-own [microbe-health]
 
-;; Host health, only important if that's turned on
-patches-own [health diapause]
+;; Host health
+;; 'diapause' is related to the host breeding rate. See the 'set-host-health' function near the end.
+patches-own [host-health diapause]
 
 
 to setup
   clear-all
   
-  ;; Every patch gets a mutualist, to begin
+  ;; Every patch gets a mutualist, and starts with 20 health
   ask patches [
-    sprout-mutualists 1 [
-      set size 0.5
-      set color sky
-      set shape "face happy"
+    sprout-weaks 1 [
+      set color yellow
+      set shape "x"
     ]
-    if host-health? = TRUE [ 
-      set health 20 
-      set diapause host-breed-delay
-      ]
+    set host-health 100      ; If changed, make sure that it matches the newly-born host-health after diapause, in 'set-host-health'
+    set diapause host-breed-delay    ; Important later, if hosts are killed. See 'set-host-health' function near the bottom.
   ]
   
   ;; Cheaters distributed randomly
-  ;; Adjust the initial abundances of these with sliders
-  create-weaks weak-start [
+  create-mutualists 20 [
     setxy random-xcor random-ycor
-    set size 0.5
-    set color yellow
+    set color blue
     set shape "x"
   ]
   
-  create-strongs strong-start [
+  create-strongs 20 [
     setxy random-xcor random-ycor
-    set size 0.5
     set color red
     set shape "x"
+  ]
+  
+  ;; Every microbe starts with 20 health units
+  ask turtles [
+    set size 0.5
+    set microbe-health 20
   ]
   
   reset-ticks
@@ -57,83 +51,114 @@ to setup
 end
 
 to go
-  ;; Make sure this is the order we want
   movement
-  selection
+  set-microbe-health
+  set-host-health
   reproduce
   tick
   if count turtles = 0 [ stop ]
+  ;if (count weaks = 0) and (count strongs = 0) [stop]
 end
 
 to movement
-  ask turtles [
-    set heading random 360
-    forward random move-dist   ; move-dist is a slider, a random number is picked with that as the max
-  ]
+  ask turtles [ set heading random 360 ]
+  ask strongs [ forward random move-s ]  ; move-dist is a slider, a random number is picked with that as the max
+  ask weaks [ forward random move-w ]  ; move-dist is a slider, a random number is picked with that as the max
+  ask mutualists [ forward random move-m ]   ; move-dist is a slider, a random number is picked with that as the max
 end
 
-to selection
-  ask patches [
-    ;; M + S -> S
-    if (count mutualists-here > 0) and (count strongs-here > 0) and (count weaks-here = 0) [
-      ask mutualists-here [die] ]
-    ;; M + S + W -> MW
-    if (count mutualists-here > 0) and (count strongs-here > 0) and (count weaks-here > 0) [
-      ask strongs-here [die] ]
-    ;; All other combinations: no changes needed, right?
-    
-    ;; Carrying capacities
+to set-microbe-health
+  ;; Individual microbes' health depends on what other species are present there.
+  ;; The health costs are all sliders, found on the interface
+  ask mutualists [
+    if any? strongs-here [ set microbe-health (microbe-health - strong-hurt-mutualists) ]
+    set microbe-health (microbe-health + 1)
+  ]
+  ask weaks [
+    ; if any? mutualists-here [ set microbe-health (microbe-health - 0) ]
+    if any? strongs-here [ set microbe-health (microbe-health - strong-hurt-weak) ]
+    set microbe-health (microbe-health + weak-steal)
+  ]
+  ask strongs [
+    ; if any? mutualists-here [ set microbe-health (microbe-health - 0) ]
+    if any? weaks-here [ set microbe-health (microbe-health - weak-hurt-strong) ]
+    set microbe-health (microbe-health + strong-steal)
+  ]
+  ;; General aging for microbes
+  ask turtles [ set microbe-health (microbe-health - 1) ]
+  ;; Microbe death
+  ask turtles [ if microbe-health <= 0 [ die ] ]
+  
+  ;; Carrying capacities
+   ask patches [
     if (count mutualists-here > carrying-cap) [
       let overcap ((count mutualists-here) - carrying-cap)
-      ask n-of overcap mutualists-here [ die ]
+      ;ask n-of overcap mutualists-here [ die ]
+      ask min-n-of overcap mutualists-here [ microbe-health ] [ die ]
     ]
     if (count weaks-here > carrying-cap) [
       let overcap ((count weaks-here) - carrying-cap)
-      ask n-of overcap weaks-here [ die ]
+      ;ask n-of overcap weaks-here [ die ]
+      ask min-n-of overcap weaks-here [ microbe-health ] [ die ]
     ]
     if (count strongs-here > carrying-cap) [
       let overcap ((count strongs-here) - carrying-cap)
-      ask n-of overcap strongs-here [ die ]
+      ;ask n-of overcap strongs-here [ die ]
+      ask min-n-of overcap strongs-here [ microbe-health ] [ die ]
     ]
   ]
   if (host-flush? = TRUE) [ host-flush ]
-  if (host-health? = TRUE) [ host-health ]
-end
-
-to reproduce
-  ;; 'mod' is a weird NetLogo command for getting the remainder after division
-  ;; Basically, if the number of time ticks is perfectly divisible by the 'breed-every' number, then reproduce
-  ;; The 'breed-every' numbers are sliders
-  if ticks mod mutualist-breed-every = 0 [
-    ask mutualists [ hatch 1 ]]
-  if ticks mod weak-breed-every = 0 [
-    ask weaks [ hatch 1 ]]
-  if ticks mod strong-breed-every = 0 [
-    ask strongs [hatch 1 ]]  
 end
 
 to host-flush
   ask patches [
-    if count mutualists-here = 0 [
-      ask turtles-here [die]]
+    if count strongs-here >= per-flush * carrying-cap [
+      ask turtles-here [die]]    ; All of these dead turtles are cheaters
   ]
 end
 
-to host-health
+to set-host-health
   ask patches [
-    set health ( health - 1 )
-    if (count mutualists-here > 0) and (count strongs-here = 0) [
-      set health health + 1
+    ;; Hosts' health gets drained by cheaters
+    if any? weaks-here [
+      ;set host-health (host-health - weak-steal)
+      set host-health (host-health - (weak-steal * (count weaks-here)))
     ]
-    ;; Right now, if the host loses all health, the microbes all die, and a new host is immediately born
-    ;; I'm going to add a delay until a new host is born
-    ;; Other option: permanently die, and fracture the landscape
-    if health <= 0 [
+    if any? strongs-here [
+      ;set host-health (host-health - strong-steal)
+      set host-health (host-health - (strong-steal * (count strongs-here)))
+    ]
+    
+    if any? mutualists-here [
+      ;set host-health (host-health + mutualist-give)
+      set host-health (host-health + (mutualist-give * (count mutualists-here)))
+    ]
+    
+    ;; Assume that mutualists do not hurt the host overall (any hurt is perfectly offset by a benefit)
+
+    ;; If the host loses all health, the microbes all die, and a new host is born after a delay
+    ;; This delay can be adjusted by the 'host-breed-delay' slider, and the results are very sensitive to this
+    if host-health <= 0 [
       ask turtles-here [die]
       set diapause diapause - 1
-      if diapause <= 0 [ set health 50 ]
+      if diapause <= 0 [ set host-health 100 ]     ; Make sure that this matches initial host-health
     ]
-    ; set pcolor scale-color black health 0 20    ;; For visualizing host health, kind of distractin
+    ; set pcolor scale-color red host-health 0 20    ;; For visualizing host health, kind of distracting
+  ]
+end
+
+
+to reproduce
+  ;; 'mod' is a weird NetLogo command for getting the remainder after division
+  ;; Basically, if the number of time ticks is perfectly divisible by t, then all microbes reproduce
+  ;if ticks mod 5 = 0 [
+  ;  ask turtles [ hatch 1 [ set microbe-health 20 ]]]
+  ask turtles [
+    if microbe-health >= reproduction-threshold [
+      let split-health round ( microbe-health / 2 )
+      hatch 1 [ set microbe-health split-health ]
+      set microbe-health split-health
+    ]
   ]
 end
 @#$#@#$#@
@@ -183,9 +208,9 @@ NIL
 
 BUTTON
 108
-25
+23
 171
-58
+56
 NIL
 go
 T
@@ -199,25 +224,25 @@ NIL
 1
 
 SLIDER
-13
-73
-105
-106
-move-dist
-move-dist
-1
+241
+431
+411
+464
+move-s
+move-s
+0
 10
-3
+10
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-113
-73
-221
-106
+51
+68
+159
+101
 carrying-cap
 carrying-cap
 0
@@ -246,81 +271,14 @@ false
 PENS
 "default" 1.0 0 -16777216 true "" "plot (((count patches with [count mutualists-here > 0]) / 121) * 100)"
 
-SLIDER
-13
-245
-183
-278
-mutualist-breed-every
-mutualist-breed-every
-0
-10
-10
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-12
-284
-184
-317
-weak-breed-every
-weak-breed-every
-0
-10
-7
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-11
-322
-183
-355
-strong-breed-every
-strong-breed-every
-0
-10
-2
-1
-1
-NIL
-HORIZONTAL
-
 SWITCH
-11
-376
-163
-409
+29
+353
+181
+386
 host-flush?
 host-flush?
 1
-1
--1000
-
-SWITCH
-11
-458
-139
-491
-pathogens?
-pathogens?
-1
-1
--1000
-
-SWITCH
-11
-413
-162
-446
-host-health?
-host-health?
-0
 1
 -1000
 
@@ -344,76 +302,201 @@ PENS
 "weaks" 1.0 0 -1184463 true "" "plot count weaks"
 "strongs" 1.0 0 -2674135 true "" "plot count strongs"
 
-TEXTBOX
-145
-471
-295
-489
-(Not currently in use)
-11
-0.0
-1
-
 SLIDER
-13
-139
-185
-172
-weak-start
-weak-start
-1
-50
-20
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-13
-176
-185
-209
-strong-start
-strong-start
-0
-50
-20
-1
-1
-NIL
-HORIZONTAL
-
-TEXTBOX
-15
-120
-165
-138
-Initial cheater abundances:
-11
-0.0
-1
-
-TEXTBOX
-18
-227
-168
-245
-Reproduction timing:
-11
-0.0
-1
-
-SLIDER
-175
-413
+31
+314
+203
 347
-446
 host-breed-delay
 host-breed-delay
 0
 20
 5
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+439
+423
+611
+456
+weak-steal
+weak-steal
+0
+10
+1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+440
+466
+612
+499
+strong-steal
+strong-steal
+0
+10
+10
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+440
+394
+613
+412
+How cheaters hurt their host:
+11
+0.0
+1
+
+TEXTBOX
+27
+117
+177
+135
+Competition coefficients:
+11
+0.0
+1
+
+SLIDER
+25
+134
+197
+167
+weak-hurt-mutualists
+weak-hurt-mutualists
+0
+10
+1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+25
+170
+197
+203
+weak-hurt-strong
+weak-hurt-strong
+0
+10
+1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+25
+207
+198
+240
+strong-hurt-mutualists
+strong-hurt-mutualists
+0
+10
+2
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+25
+244
+197
+277
+strong-hurt-weak
+strong-hurt-weak
+0
+10
+1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+30
+414
+202
+447
+mutualist-give
+mutualist-give
+0
+20
+20
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+239
+389
+411
+422
+move-w
+move-w
+0
+10
+7
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+240
+473
+412
+506
+move-m
+move-m
+0
+10
+4
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+30
+456
+202
+489
+per-flush
+per-flush
+0
+1
+0.5
+0.1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+666
+416
+868
+449
+reproduction-threshold
+reproduction-threshold
+20
+50
+30
 1
 1
 NIL
