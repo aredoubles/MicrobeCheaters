@@ -151,15 +151,15 @@ end
 to reproduce
   ;; 'mod' is a weird NetLogo command for getting the remainder after division
   ;; Basically, if the number of time ticks is perfectly divisible by t, then all microbes reproduce
-  ;if ticks mod 5 = 0 [
-  ;  ask turtles [ hatch 1 [ set microbe-health 20 ]]]
-  ask turtles [
-    if microbe-health >= reproduction-threshold [
-      let split-health round ( microbe-health / 2 )
-      hatch 1 [ set microbe-health split-health ]
-      set microbe-health split-health
-    ]
-  ]
+  if ticks mod 5 = 0 [
+    ask turtles [ hatch 1 [ set microbe-health 20 ]]]
+  ;ask turtles [
+  ;  if microbe-health >= reproduction-threshold [
+   ;   let split-health round ( microbe-health / 2 )
+     ; set microbe-health split-health
+    ;  hatch 1
+    ;]
+  ;]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -224,10 +224,10 @@ NIL
 1
 
 SLIDER
-241
-431
-411
-464
+228
+433
+398
+466
 move-s
 move-s
 0
@@ -318,10 +318,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-439
-423
-611
-456
+418
+419
+590
+452
 weak-steal
 weak-steal
 0
@@ -333,10 +333,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-440
-466
-612
-499
+417
+457
+589
+490
 strong-steal
 strong-steal
 0
@@ -348,10 +348,10 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-440
-394
-613
-412
+422
+401
+595
+419
 How cheaters hurt their host:
 11
 0.0
@@ -428,10 +428,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-30
-414
-202
-447
+19
+400
+191
+433
 mutualist-give
 mutualist-give
 0
@@ -443,10 +443,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-239
-389
-411
-422
+226
+391
+398
+424
 move-w
 move-w
 0
@@ -458,10 +458,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-240
-473
-412
-506
+227
+475
+399
+508
 move-m
 move-m
 0
@@ -473,10 +473,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-30
-456
-202
-489
+19
+442
+191
+475
 per-flush
 per-flush
 0
@@ -488,10 +488,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-666
-416
-868
-449
+9
+482
+211
+515
 reproduction-threshold
 reproduction-threshold
 20
@@ -501,6 +501,26 @@ reproduction-threshold
 1
 NIL
 HORIZONTAL
+
+PLOT
+607
+397
+896
+547
+healthtime
+time
+avg. health
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"mutualists" 1.0 0 -13791810 true "" "plot mean [microbe-health] of mutualists"
+"weaks" 1.0 0 -1184463 true "" "plot mean [microbe-health] of weaks"
+"strongs" 1.0 0 -2674135 true "" "plot mean [microbe-health] of strongs"
 
 @#$#@#$#@
 ## What is it?
