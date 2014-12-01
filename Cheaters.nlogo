@@ -1,5 +1,6 @@
 ;;;;;;;;; CURRENT ISSUES ;;;;;;;;;;;;;
-;; * Strong cheaters never seem to persist
+;; * Density-dependent reproduction
+
 
 ;; Create the three species (define plural and singular terms)
 breed [mutualists mutualist]
@@ -93,15 +94,15 @@ to set-microbe-health
    ask patches [
     if (count mutualists-here > carrying-cap) [
       let overcap ((count mutualists-here) - carrying-cap)
-      ask n-of overcap mutualists-here [ die ]
+      ask min-n-of overcap mutualists-here [ microbe-health ] [ die ]
     ]
     if (count weaks-here > carrying-cap) [
       let overcap ((count weaks-here) - carrying-cap)
-      ask n-of overcap weaks-here [ die ]
+      ask min-n-of overcap weaks-here [ microbe-health ] [ die ]
     ]
     if (count strongs-here > carrying-cap) [
       let overcap ((count strongs-here) - carrying-cap)
-      ask n-of overcap strongs-here [ die ]
+      ask min-n-of overcap strongs-here [ microbe-health ] [ die ]
     ]
   ]
   if (host-flush? = TRUE) [ host-flush ]
@@ -118,14 +119,14 @@ to set-host-health
   ask patches [
     ;; Hosts' health gets drained by cheaters
     if any? weaks-here [
-      set host-health (host-health - weak-steal)
+      set host-health (host-health - (weak-steal * (count weaks-here)))
     ]
     if any? strongs-here [
-      set host-health (host-health - strong-steal)
+      set host-health (host-health - (strong-steal * (count strongs-here)))
     ]
     
     if any? mutualists-here [
-      set host-health (host-health + mutualist-give)
+      set host-health (host-health + (mutualist-give * (count mutualists-here)))
     ]
     
     ;; Assume that mutualists do not hurt the host overall (any hurt is perfectly offset by a benefit)
@@ -145,8 +146,15 @@ end
 to reproduce
   ;; 'mod' is a weird NetLogo command for getting the remainder after division
   ;; Basically, if the number of time ticks is perfectly divisible by t, then all microbes reproduce
-  if ticks mod 5 = 0 [
-    ask turtles [ hatch 1 [ set microbe-health 20 ]]]
+  ; if ticks mod 5 = 0 [
+  ;   ask turtles [ hatch 1 [ set microbe-health 20 ]]]
+  ask turtles [
+    if microbe-health >= reproduction-threshold [
+      let split-health round ( microbe-health / 2 )
+      hatch 1 [ set microbe-health split-health ]
+      set microbe-health split-health
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -328,7 +336,7 @@ strong-steal
 strong-steal
 0
 10
-10
+4
 1
 1
 NIL
@@ -393,7 +401,7 @@ strong-hurt-mutualists
 strong-hurt-mutualists
 0
 10
-2
+1
 1
 1
 NIL
@@ -470,6 +478,21 @@ per-flush
 1
 0.5
 0.1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+964
+59
+1166
+92
+reproduction-threshold
+reproduction-threshold
+0
+50
+20
+1
 1
 NIL
 HORIZONTAL
@@ -825,6 +848,15 @@ NetLogo 5.1.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="goats" repetitions="2" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="200"/>
+    <metric>count mutualists</metric>
+    <steppedValueSet variable="strong-steal" first="0" step="1" last="10"/>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
