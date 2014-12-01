@@ -151,15 +151,15 @@ end
 to reproduce
   ;; 'mod' is a weird NetLogo command for getting the remainder after division
   ;; Basically, if the number of time ticks is perfectly divisible by t, then all microbes reproduce
-  if ticks mod 5 = 0 [
-    ask turtles [ hatch 1 [ set microbe-health 20 ]]]
-  ;ask turtles [
-  ;  if microbe-health >= reproduction-threshold [
-   ;   let split-health round ( microbe-health / 2 )
-     ; set microbe-health split-health
-    ;  hatch 1
-    ;]
-  ;]
+  ;if ticks mod 5 = 0 [
+  ;  ask turtles [ hatch 1 [ set microbe-health 20 ]]]
+  ask turtles [
+    if microbe-health >= reproduction-threshold [
+      let split-health round ( microbe-health / 2 )
+      set microbe-health split-health
+      hatch 1
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -341,7 +341,7 @@ strong-steal
 strong-steal
 0
 10
-10
+3
 1
 1
 NIL
