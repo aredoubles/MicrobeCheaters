@@ -518,9 +518,9 @@ true
 true
 "" ""
 PENS
-"mutualists" 1.0 0 -13791810 true "" "plot mean [microbe-health] of mutualists"
-"weaks" 1.0 0 -1184463 true "" "plot mean [microbe-health] of weaks"
-"strongs" 1.0 0 -2674135 true "" "plot mean [microbe-health] of strongs"
+"mutualists" 1.0 0 -13791810 true "" "if count mutualists > 0 [plot mean [microbe-health] of mutualists]"
+"weaks" 1.0 0 -1184463 true "" "if count weaks > 0 [plot mean [microbe-health] of weaks]"
+"strongs" 1.0 0 -2674135 true "" "if count strongs > 0 [plot mean [microbe-health] of strongs]"
 
 @#$#@#$#@
 ## What is it?
