@@ -85,7 +85,7 @@ to set-microbe-health
     set microbe-health (microbe-health + strong-steal)
   ]
   ;; General aging for microbes
-  ask turtles [ set microbe-health (microbe-health - 1) ]
+  ;ask turtles [ set microbe-health (microbe-health - 1) ]
   ;; Microbe death
   ask turtles [ if microbe-health <= 0 [ die ] ]
   
@@ -112,7 +112,7 @@ end
 
 to host-flush
   ask patches [
-    if count strongs-here >= per-flush * carrying-cap [
+    if count strongs-here >= (per-flush * carrying-cap) [
       ask turtles-here [die]]    ; All of these dead turtles are cheaters
   ]
 end
@@ -232,7 +232,7 @@ move-s
 move-s
 0
 10
-10
+8
 1
 1
 NIL
@@ -326,7 +326,7 @@ weak-steal
 weak-steal
 0
 10
-1
+2
 1
 1
 NIL
@@ -451,7 +451,7 @@ move-w
 move-w
 0
 10
-7
+6
 1
 1
 NIL
@@ -518,8 +518,8 @@ true
 true
 "" ""
 PENS
-"mutualists" 1.0 0 -13791810 true "" "if count mutualists > 0 [plot mean [microbe-health] of mutualists]"
-"weaks" 1.0 0 -1184463 true "" "if count weaks > 0 [plot mean [microbe-health] of weaks]"
+"mutualists" 1.0 0 -13791810 true "" "ifelse count mutualists > 0 [plot mean [microbe-health] of mutualists] [plot 0]"
+"weaks" 1.0 0 -1184463 true "" "ifelse count weaks > 0 [plot mean [microbe-health] of weaks] [plot 0]"
 "strongs" 1.0 0 -2674135 true "" "if count strongs > 0 [plot mean [microbe-health] of strongs]"
 
 @#$#@#$#@
